@@ -44,14 +44,10 @@ More detailed, implementation‑focused docs are kept close to the code:
 
 ## GitHub Pages
 
-To publish the documentation as a GitHub Pages site:
+The documentation in `docs/` is set up to be served via **GitHub Pages**.
 
-1. Push this repository to GitHub (`main` branch).  
-2. In the GitHub UI, go to **Settings → Pages**.  
-3. Under **Build and deployment**, set:
-   - **Source**: `Deploy from a branch`
-   - **Branch**: `main`, folder: `/docs`  
-4. Save. GitHub will build the site using the configuration in `docs/_config.yml` (currently `theme: minima`).
+- **Hosted docs URL** (once Pages is enabled on GitHub):  
+  `https://ulfboge.github.io/gold-standard/`
 
-After the first build, the site will be available at the URL shown in the Pages settings (typically `https://<username>.github.io/gold-standard/`).
+See `docs/index.md` for more details on how the site is structured.
 
