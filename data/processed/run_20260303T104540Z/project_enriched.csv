@@ -1,0 +1,4 @@
+id,obs_type,date_time,collector,notes,photo_path,gnss_accuracy_m,admin_id,name_left,pa_id,name_right,lc_id,class
+obs1,ground_truth,2026-03-01 12:00:00+00:00,alice,forest plot,,3.5,drc_admin_all,DRC test admin,pa_1,Test Protected Area,lc_forest,forest
+obs2,ground_truth,2026-03-02 12:00:00+00:00,bob,cropland edge,photos/obs2.jpg,8.0,drc_admin_all,DRC test admin,,,lc_forest,forest
+obs3,leakage_check,2026-03-02 13:00:00+00:00,alice,leakage sample,photos/obs3.jpg,15.0,drc_admin_all,DRC test admin,,,lc_forest,forest

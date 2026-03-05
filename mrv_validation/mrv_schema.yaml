@@ -1,0 +1,340 @@
+version: 1
+name: mrv_mergin_geopackage
+
+geopackage:
+  layers:
+    observations:
+      geometry_type: Point
+      srid: 4326
+      primary_key: obs_id
+      fields:
+        - name: obs_id
+          type: string
+          required: true
+          description: Unique observation ID (UUID or project-specific code)
+        - name: project_id
+          type: string
+          required: true
+        - name: obs_type
+          type: string
+          required: true
+          lookup: lookups_obs_type
+        - name: collector_id
+          type: string
+          required: true
+        - name: obs_time
+          type: datetime
+          required: true
+        - name: landcover_class
+          type: string
+          required_if:
+            obs_type: [ground_truth]
+          lookup: lookups_landcover_class
+        - name: gnss_accuracy_m
+          type: float
+          required: false
+        - name: notes
+          type: string
+          required: false
+        - name: aoi_id
+          type: string
+          required: false
+        - name: monitoring_period_id
+          type: string
+          required: false
+
+    observations_review:
+      geometry_type: None
+      primary_key: obs_id
+      fields:
+        - name: obs_id
+          type: string
+          required: true
+        - name: state
+          type: string
+          required: true
+          description: Review workflow state
+        - name: auto_checks_passed
+          type: boolean
+          required: true
+        - name: auto_error_count
+          type: integer
+          required: true
+        - name: auto_warning_count
+          type: integer
+          required: true
+        - name: reviewer_id
+          type: string
+          required: false
+        - name: reviewer_decision
+          type: string
+          required: false
+          allowed_values: [APPROVED, REJECTED]
+        - name: reviewer_notes
+          type: string
+          required: false
+        - name: last_checked_at
+          type: datetime
+          required: true
+        - name: last_updated_at
+          type: datetime
+          required: true
+
+    attachments:
+      geometry_type: None
+      primary_key: attachment_id
+      fields:
+        - name: attachment_id
+          type: string
+          required: true
+        - name: obs_id
+          type: string
+          required: true
+        - name: file_path
+          type: string
+          required: true
+        - name: file_type
+          type: string
+          required: true
+          allowed_values: [photo, video, audio, document]
+        - name: mime_type
+          type: string
+          required: true
+        - name: sha256
+          type: string
+          required: true
+        - name: captured_at
+          type: datetime
+          required: false
+        - name: exif_datetime
+          type: datetime
+          required: false
+        - name: exif_gps_lat
+          type: float
+          required: false
+        - name: exif_gps_lon
+          type: float
+          required: false
+        - name: width_px
+          type: integer
+          required: false
+        - name: height_px
+          type: integer
+          required: false
+        - name: notes
+          type: string
+          required: false
+
+    lookups_obs_type:
+      geometry_type: None
+      primary_key: code
+      fields:
+        - name: code
+          type: string
+          required: true
+        - name: label
+          type: string
+          required: true
+        - name: description
+          type: string
+          required: false
+
+    lookups_landcover_class:
+      geometry_type: None
+      primary_key: code
+      fields:
+        - name: code
+          type: string
+          required: true
+        - name: label
+          type: string
+          required: true
+        - name: description
+          type: string
+          required: false
+
+    aoi:
+      geometry_type: Polygon
+      srid: 4326
+      primary_key: aoi_id
+      fields:
+        - name: aoi_id
+          type: string
+          required: true
+        - name: project_id
+          type: string
+          required: true
+
+    monitoring_periods:
+      geometry_type: None
+      primary_key: monitoring_period_id
+      fields:
+        - name: monitoring_period_id
+          type: string
+          required: true
+        - name: project_id
+          type: string
+          required: true
+        - name: start_date
+          type: date
+          required: true
+        - name: end_date
+          type: date
+          required: true
+
+validation:
+  temporal:
+    - id: obs_time_not_in_future
+      table: observations
+      severity: error
+      type: datetime_not_in_future
+      field: obs_time
+
+    - id: obs_time_in_monitoring_period
+      table: observations
+      severity: error
+      type: datetime_within_period
+      field: obs_time
+      period_table: monitoring_periods
+      period_id_field: monitoring_period_id
+      period_start_field: start_date
+      period_end_field: end_date
+
+  geometry:
+    - id: geom_not_empty
+      table: observations
+      severity: error
+      type: geometry_not_empty
+
+    - id: geom_valid
+      table: observations
+      severity: error
+      type: geometry_is_valid
+
+    - id: geom_within_aoi
+      table: observations
+      severity: error
+      type: geometry_within
+      aoi_table: aoi
+      aoi_id_field: aoi_id
+      obs_aoi_id_field: aoi_id
+
+  attributes:
+    - id: required_fields_ground_truth
+      table: observations
+      severity: error
+      type: required_if_obs_type
+      obs_type: ground_truth
+      required_fields:
+        - landcover_class
+
+    - id: required_fields_default
+      table: observations
+      severity: error
+      type: required_fields
+      required_fields:
+        - obs_id
+        - project_id
+        - obs_type
+        - collector_id
+        - obs_time
+
+    - id: obs_type_in_lookup
+      table: observations
+      severity: error
+      type: lookup_membership
+      field: obs_type
+      lookup_table: lookups_obs_type
+      lookup_field: code
+
+    - id: landcover_class_in_lookup
+      table: observations
+      severity: error
+      type: lookup_membership_nullable
+      field: landcover_class
+      lookup_table: lookups_landcover_class
+      lookup_field: code
+
+  attachments:
+    - id: min_one_photo_for_ground_truth
+      table: attachments
+      severity: error
+      type: min_attachments_per_obs
+      join_table: observations
+      for_obs_types: [ground_truth]
+      min_count: 1
+      allowed_file_types: [photo]
+      allowed_mime_types: ["image/jpeg", "image/png"]
+
+    - id: photo_mime_types
+      table: attachments
+      severity: error
+      type: mime_type_allowed
+      file_type: photo
+      allowed_mime_types: ["image/jpeg", "image/png"]
+
+    - id: exif_time_diff_warning
+      table: attachments
+      severity: warning
+      type: exif_time_consistency
+      exif_field: exif_datetime
+      join_table: observations
+      join_field: obs_id
+      obs_time_field: obs_time
+      max_time_diff_minutes: 60
+
+  precision:
+    - id: gnss_accuracy_threshold
+      table: observations
+      severity: warning
+      type: numeric_max_if_present
+      field: gnss_accuracy_m
+      max_value: 10.0
+
+  duplication:
+    - id: duplicate_obs_same_collector_time_space
+      table: observations
+      severity: warning
+      type: potential_duplicate
+      fields_for_exact_match:
+        - collector_id
+        - obs_time
+      distance_threshold_m: 5.0
+      time_threshold_minutes: 5
+
+workflow:
+  table: observations_review
+  field: state
+  initial_state: NEW
+  states:
+    - NEW
+    - AUTO_CHECKED
+    - NEEDS_REVIEW
+    - APPROVED
+    - REJECTED
+
+  transitions:
+    - from: NEW
+      to: AUTO_CHECKED
+      trigger: auto_validation_complete
+
+    - from: AUTO_CHECKED
+      to: NEEDS_REVIEW
+      condition: "auto_error_count > 0 or auto_warning_count > 0"
+
+    - from: AUTO_CHECKED
+      to: APPROVED
+      condition: "auto_error_count == 0 and auto_warning_count == 0"
+
+    - from: NEEDS_REVIEW
+      to: APPROVED
+      trigger: reviewer_approve
+
+    - from: NEEDS_REVIEW
+      to: REJECTED
+      trigger: reviewer_reject
+
+    - from: REJECTED
+      to: NEEDS_REVIEW
+      trigger: reopen
+

@@ -1,0 +1,39 @@
+name: Field pipeline CI
+
+on:
+  push:
+    paths:
+      - "field_pipeline/**"
+      - ".github/workflows/field-pipeline-ci.yml"
+  pull_request:
+    paths:
+      - "field_pipeline/**"
+      - ".github/workflows/field-pipeline-ci.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system deps for geospatial stack
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gdal-bin libgdal-dev
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r field_pipeline/requirements.txt
+
+      - name: Run tests
+        run: |
+          pytest field_pipeline/tests -vv
+

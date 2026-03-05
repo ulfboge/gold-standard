@@ -1,0 +1,2 @@
+id,obs_type,date_time,collector,notes,photo_path
+obs1,ground_truth,2026-03-02 12:00:00+00:00,tester,test obs,

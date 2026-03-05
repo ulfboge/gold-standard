@@ -1,0 +1,10 @@
+typer[all]
+pyyaml
+geopandas
+shapely
+fiona
+rasterio
+duckdb
+pytest
+openai
+

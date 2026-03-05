@@ -1,0 +1,71 @@
+paths:
+  incoming_gpkg: data/incoming/project.gpkg
+  incoming_attachments_dir: data/incoming/attachments
+  processed_dir: data/processed
+  context_dir: data/context
+
+main_layer: observations
+crs_fallback: "EPSG:4326"
+
+required_fields:
+  id:
+    required: true
+  obs_type:
+    required: true
+  date_time:
+    required: true
+  collector:
+    required: true
+  geometry:
+    required: true
+  photo_path:
+    required_if_photo: true
+  gnss_accuracy_m:
+    min_gnss_accuracy_m: 0.0
+    max_gnss_accuracy_m: 10.0
+  lc_label:
+    required: true
+  ipcc_class:
+    required: true
+    allowed_values:
+      - Forest land
+      - Cropland
+      - Grassland
+      - Wetlands
+      - Settlements
+      - Other land
+
+enrichment_layers:
+  - name: admin_boundaries
+    path: data/context/admin_boundaries.gpkg
+    join_type: spatial
+  - name: protected_areas
+    path: data/context/protected_areas.gpkg
+    join_type: spatial
+  - name: land_cover
+    path: data/context/land_cover.gpkg
+    join_type: spatial
+
+ai:
+  enabled: true         # set to true to enable AI-assisted text
+  provider: openai      # uses OPENAI_API_KEY from environment
+
+rules:
+  gnss_accuracy:
+    enabled: true
+    severity: error     # for prototype A/R project, treat as error
+  gnss_accuracy_training:
+    enabled: true
+    severity: warning   # stricter preferred threshold for lc_training/lc_validation
+  leakage_in_forest:
+    enabled: true
+    severity: error
+  ground_truth_photo_missing:
+    enabled: true
+    severity: error     # for prototype A/R project, photos are mandatory
+
+rag:
+  enabled: true         # enable to retrieve GS snippets for AI prompts
+  docs_dir: docs        # directory with Gold Standard / MRV docs (e.g. Markdown, text)
+  top_k: 3              # number of snippets to retrieve per query
+
