@@ -27,6 +27,7 @@ The repository brings together:
   - [7. AI integration (optional)](field-pipeline/07_ai_integration.md)
   - [8. Testing and CI](field-pipeline/08_testing_ci.md)
   - [9. Customization roadmap](field-pipeline/09_customization_roadmap.md)
+  - [10. Optional PostGIS-compatible backend workflow](field-pipeline/10_supabase_postgis_workflow.md)
 
 - **Field schema for land‑cover training**  
   Suggested schema and aliases for land‑cover training / validation points:

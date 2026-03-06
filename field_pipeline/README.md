@@ -69,5 +69,6 @@ pytest field_pipeline/tests
 ### Notes
 
 - All components are designed to run **locally** with free/open libraries (GeoPandas, Shapely, Rasterio, GDAL, DuckDB optional, PostGIS optional).
+- If you use a PostGIS-compatible backend such as Supabase upstream, keep the pipeline GeoPackage-first: export or sync a pipeline-ready `project.gpkg` into `data/incoming/` before running the CLI. See `docs/field-pipeline/10_supabase_postgis_workflow.md` for the optional database-backed workflow and notes on Mergin Maps DB Sync.
 - The AI layer is **optional and pluggable**; by default the pipeline runs in no‑AI mode and will only activate AI if configured via environment variables and config flags. TODO: fill in your chosen provider or keep disabled. 
 

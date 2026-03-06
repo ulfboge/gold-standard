@@ -15,6 +15,12 @@ The central configuration file `field_pipeline/config/pipeline.yaml` controls:
 - **Enrichment layers** – which context datasets to spatially join.
 - **AI options** – whether AI is used to draft narrative text in reports.
 
+Important scope note:
+
+- `pipeline.yaml` configures the **file-based pipeline**.
+- It does **not** currently configure a direct connection from the CLI to a PostGIS-compatible backend such as Supabase.
+- If you use a PostGIS-compatible backend for editing, export the database contents to `paths.incoming_gpkg` first, then run the same commands described here. See `10_supabase_postgis_workflow.md`.
+
 An example:
 
 ```yaml
@@ -64,7 +70,9 @@ ai:
 ### Paths
 
 - **`paths.incoming_gpkg`**  
-  Path to the raw GeoPackage synced from Mergin Maps.
+  Path to the raw GeoPackage consumed by the CLI.
+  
+  In the default workflow, this is synced from Mergin Maps. In the optional PostGIS-compatible backend workflow, this is the exported GeoPackage produced from the database handoff step.
 
 - **`paths.incoming_attachments_dir`**  
   Directory containing raw photos/attachments referenced from the GeoPackage.

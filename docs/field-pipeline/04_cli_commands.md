@@ -4,6 +4,8 @@ This page describes the **CLI commands** exposed by the field pipeline. It is ad
 
 All commands are provided via a Typer‑based CLI in `field_pipeline/field_pipeline/cli.py`.
 
+The CLI currently operates on a GeoPackage input. If your observations are maintained in a PostGIS-compatible backend such as Supabase, first export a pipeline-ready GeoPackage to `data/incoming/project.gpkg` or another path passed via `--gpkg`. See `10_supabase_postgis_workflow.md`.
+
 ---
 
 ### Setup

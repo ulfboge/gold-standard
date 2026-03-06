@@ -2,6 +2,8 @@
 
 This page summarises the overall **end‑to‑end workflow** of the field data pipeline scaffolded in `field_pipeline/`. It is adapted from section 1 of `field_pipeline/PROCESS_MANUAL.md`.
 
+The default documentation assumes a **file‑based pipeline input**: a GeoPackage in `data/incoming/`. If you maintain observations in a **PostGIS-compatible backend such as Supabase**, treat that database as an **upstream editing backend** and export a pipeline‑ready GeoPackage before running the CLI. See `10_supabase_postgis_workflow.md`.
+
 ### What the pipeline does
 
 The pipeline turns Mergin Maps / QGIS field data (GeoPackage + attachments) into validated, enriched, and report‑ready outputs, while keeping raw data immutable and using open‑source tooling.
@@ -20,6 +22,10 @@ At a high level, each run performs:
    - The pipeline assumes:
      - GeoPackage at `data/incoming/project.gpkg`
      - Attachments directory at `data/incoming/attachments/` (configurable in `pipeline.yaml`).
+   - Optional database-backed variant:
+     - Observations are edited in a PostGIS-compatible backend such as Supabase.
+     - A refreshed export table is written back out to `data/incoming/project.gpkg`.
+     - The rest of the pipeline then runs exactly as it does for the default file-based workflow.
 
 3. **Ingest (copy to `data/processed/`)**
    - The `ingest` command copies the current incoming GeoPackage and attachments to a **timestamped run directory** under `data/processed/`, e.g.:

@@ -35,3 +35,26 @@ This would provide:
 - Stronger audit trails (proof that specific photos have not changed).
 - Cross‑checks between EXIF timestamps/locations and the recorded observation `date_time` and geometry.
 
+---
+
+### Future option: Mergin Maps Media Sync
+
+If attachment volume grows or you want more durable media storage, it may become useful to evaluate **Mergin Maps Media Sync**. According to the Mergin Maps documentation, Media Sync can synchronize media files from a Mergin Maps project to external storage backends such as Google Drive, Amazon S3, or MinIO, using either copy or move mode.
+
+References:
+
+- [Mergin Maps Media Sync docs](https://merginmaps.com/docs/dev/media-sync/)
+- [MerginMaps/media-sync repository](https://github.com/MerginMaps/media-sync)
+
+For this repository, Media Sync is most relevant as a future extension when:
+
+- Photos or other media become too large to manage comfortably only inside the project attachments folder.
+- You want a more durable or centrally managed evidence store.
+- Downstream QA, reporting, or audit workflows need media files in object storage.
+
+If adopted later, keep the integration explicit:
+
+- Decide whether `data/incoming/attachments/` remains the working copy used by the pipeline.
+- Preserve a stable link between each observation record and its media object path.
+- Add hashing or indexing so object-storage files still support audit-grade traceability.
+

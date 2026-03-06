@@ -10,7 +10,9 @@ At the repository root (`gold-standard/`), the pipeline assumes:
 
 - `data/`
   - `incoming/`
-    - `project.gpkg` – main GeoPackage synced from Mergin Maps (configurable in `pipeline.yaml`).
+    - `project.gpkg` – main GeoPackage used as CLI input (configurable in `pipeline.yaml`).
+      - In the default workflow, this is synced from Mergin Maps.
+      - In the optional PostGIS-compatible backend workflow, this is exported from the database before running the CLI.
     - `attachments/` – photos and other files linked from attributes (optional but recommended).
   - `processed/`
     - `run_<timestamp>/` – per‑run copies of `project.gpkg` and `attachments/` created by `ingest`.
@@ -25,6 +27,7 @@ At the repository root (`gold-standard/`), the pipeline assumes:
   - `PROCESS_MANUAL.md` – full manual (the source for these docs pages).
   - `requirements.txt` – Python dependencies for the pipeline.
   - `config/pipeline.yaml` – **main configuration file** (paths, rules, enrichment, AI).
+  - `sql/` – optional SQL scripts for a PostGIS-compatible editing workflow and export handoff.
   - `field_pipeline/` (Python package):
     - `cli.py` – Typer‑based CLI entry‑point (all commands exposed here).
     - `config.py` – configuration loader (YAML → dataclasses).
