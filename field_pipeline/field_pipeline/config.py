@@ -17,6 +17,7 @@ class PathsConfig:
 class FieldRule:
   name: str
   required: bool = False
+  required_for_obs_types: Optional[List[str]] = None
   required_if_photo: bool = False
   min_gnss_accuracy_m: Optional[float] = None
   max_gnss_accuracy_m: Optional[float] = None
@@ -70,6 +71,7 @@ def load_config(path: Path) -> PipelineConfig:
     required_fields[name] = FieldRule(
       name=name,
       required=bool(cfg.get("required", False)),
+      required_for_obs_types=cfg.get("required_for_obs_types"),
       required_if_photo=bool(cfg.get("required_if_photo", False)),
       min_gnss_accuracy_m=cfg.get("min_gnss_accuracy_m"),
       max_gnss_accuracy_m=cfg.get("max_gnss_accuracy_m"),

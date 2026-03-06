@@ -91,6 +91,129 @@ At the repository root (`gold-standard/`):
   - `tests/`
     - `test_cli.py` – pytest placeholder.
 
+#### 2.1. Optional: PostGIS editing, GeoPackage pipeline input
+
+If you edit data in PostgreSQL/PostGIS, but want to keep the current pipeline
+unchanged, use PostGIS only as the editing backend and export a pipeline-ready
+GeoPackage before running the CLI.
+
+Recommended database pattern:
+
+- `public.observations_point` – editable point observations.
+- `public.observations_polygon` – editable polygon observations.
+- `public.observations_export` – refreshed export table used only to hand data
+  off to the file-based pipeline.
+
+Use the SQL script:
+
+- `field_pipeline/sql/refresh_observations_export_table.sql`
+
+to rebuild `public.observations_export` whenever you want to export the latest
+edits.
+
+The export table contains:
+
+- a pipeline-safe unique `id` like `point_12` or `polygon_7`,
+- the original numeric ID as `source_id`,
+- `source_geometry_type` so point/polygon origin is preserved,
+- a single `geom` column for export.
+
+Example refresh pattern:
+
+```sql
+DROP VIEW IF EXISTS public.observations_export;
+DROP TABLE IF EXISTS public.observations_export;
+
+CREATE TABLE public.observations_export AS
+SELECT
+  row_number() OVER () AS qgis_fid,
+  merged.source_geometry_type,
+  merged.id,
+  merged.source_id,
+  merged.uuid,
+  merged.obs_type,
+  merged.date_time,
+  merged.collector,
+  merged.gnss_accuracy_m,
+  merged.lc_label,
+  merged.ipcc_class,
+  merged.notes,
+  merged.photo_path,
+  merged.geom
+FROM (
+  SELECT
+    'point'::text AS source_geometry_type,
+    ('point_' || id::text) AS id,
+    id AS source_id,
+    uuid,
+    obs_type,
+    date_time,
+    collector,
+    gnss_accuracy_m,
+    lc_label,
+    ipcc_class,
+    notes,
+    photo_path,
+    geom::geometry(Geometry, 4326) AS geom
+  FROM public.observations_point
+
+  UNION ALL
+
+  SELECT
+    'polygon'::text AS source_geometry_type,
+    ('polygon_' || id::text) AS id,
+    id AS source_id,
+    uuid,
+    obs_type,
+    date_time,
+    collector,
+    gnss_accuracy_m,
+    lc_label,
+    ipcc_class,
+    notes,
+    photo_path,
+    geom::geometry(Geometry, 4326) AS geom
+  FROM public.observations_polygon
+) AS merged;
+
+ALTER TABLE public.observations_export
+  ADD PRIMARY KEY (qgis_fid);
+
+CREATE INDEX observations_export_geom_gix
+  ON public.observations_export
+  USING gist (geom);
+```
+
+Then in QGIS:
+
+1. Save edits to `observations_point` / `observations_polygon`.
+2. Re-run `refresh_observations_export_table.sql` in Supabase SQL editor.
+3. In QGIS, add `observations_export` as a fresh PostGIS vector layer:
+   - **Layer → Add Layer → Add PostGIS Layers...**
+   - choose the `gold-standard` connection,
+   - select `observations_export`,
+   - if prompted, use `geom` as geometry column and `qgis_fid` as feature ID.
+4. Right-click `observations_export` → **Export → Save Features As...**
+5. Format: **GeoPackage**
+6. File: `data/incoming/project.gpkg`
+7. Layer name: `observations`
+
+Operator checklist:
+
+1. Edit data in PostGIS tables.
+2. Refresh the export table in Supabase.
+3. Export `observations_export` to `data/incoming/project.gpkg`.
+4. Run:
+   - `validate`
+   - `enrich`
+   - `summarize`
+   - `export`
+   - `report`
+
+After that export step, the existing pipeline commands (`validate`, `enrich`,
+`summarize`, `export`, `report`) can run against the GeoPackage exactly as
+before.
+
 ---
 
 ### 3. Configuration (`pipeline.yaml`)
@@ -167,10 +290,33 @@ ai:
 Each key under `required_fields` corresponds to an attribute you expect in the main layer:
 
 - `required: true` – field must exist in the schema and be non‑null for all rows.
+- `required_for_obs_types` – field is required only for the listed `obs_type`
+  values (for example, `lc_label` only for `lc_training` and
+  `lc_validation`).
 - `required_if_photo: true` – field is required in cases where the observation has an associated photo (logic can be extended later).
 - `min_gnss_accuracy_m` – optional numeric constraint on GNSS accuracy (e.g. 0.0 ensures no negative values; future rules can enforce maximum allowed values).
 
-> TODO (extensibility): you can expand `required_fields` semantics and corresponding checks in `validate.py` to cover more complex rules (e.g. “require photo for certain `obs_type` values”).
+Example for conditional class requirements:
+
+```yaml
+required_fields:
+  lc_label:
+    required_for_obs_types:
+      - lc_training
+      - lc_validation
+  ipcc_class:
+    required_for_obs_types:
+      - ground_truth
+      - lc_training
+      - lc_validation
+    allowed_values:
+      - Forest land
+      - Cropland
+      - Grassland
+      - Wetlands
+      - Settlements
+      - Other land
+```
 
 #### 3.4. Enrichment layers
 

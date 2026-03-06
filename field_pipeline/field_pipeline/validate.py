@@ -14,6 +14,14 @@ from .logging_config import setup_logging
 logger = setup_logging(__name__)
 
 
+def _is_missing(value) -> bool:
+  if pd.isna(value):
+    return True
+  if isinstance(value, str) and not value.strip():
+    return True
+  return False
+
+
 def validate(gpkg_path: Path, config: PipelineConfig) -> pd.DataFrame:
   """
   Perform schema, geometry, and basic temporal/accuracy checks on the main layer.
@@ -60,7 +68,11 @@ def validate(gpkg_path: Path, config: PipelineConfig) -> pd.DataFrame:
     for field_name, rule in config.required_fields.items():
       if field_name == "geometry":
         continue
-      if rule.required and pd.isna(row.get(field_name)):
+      field_value = row.get(field_name)
+      required_for_this_row = rule.required or (
+        rule.required_for_obs_types is not None and obs_type in rule.required_for_obs_types
+      )
+      if required_for_this_row and _is_missing(field_value):
         issues.append(
           {
             "id": obs_id,
@@ -71,7 +83,7 @@ def validate(gpkg_path: Path, config: PipelineConfig) -> pd.DataFrame:
         )
       # Simple allowed_values check (for e.g. ipcc_class) if configured
       if rule.allowed_values is not None:
-        val = row.get(field_name)
+        val = field_value
         if pd.notna(val) and str(val) not in rule.allowed_values:
           issues.append(
             {

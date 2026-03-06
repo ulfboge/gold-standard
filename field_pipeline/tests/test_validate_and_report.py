@@ -55,3 +55,43 @@ def test_report_submission_writes_ai_notes(tmp_path: Path):
   # AI may be disabled in some environments; in that case notes file might not exist.
   # We only assert that submission report itself was created.
 
+
+def test_validate_honors_conditional_required_fields(tmp_path: Path):
+  path = tmp_path / "conditional_rules.gpkg"
+  df = pd.DataFrame(
+    {
+      "id": ["gt1", "train1", "leak1"],
+      "obs_type": ["ground_truth", "lc_training", "leakage_check"],
+      "date_time": pd.to_datetime(
+        ["2026-03-01T12:00:00Z", "2026-03-01T12:05:00Z", "2026-03-01T12:10:00Z"],
+        utc=True,
+      ),
+      "collector": ["alice", "alice", "bob"],
+      "notes": ["gt", "train", "leak"],
+      "photo_path": ["photo1.jpg", "", ""],
+      "gnss_accuracy_m": [3.0, 2.0, 7.0],
+      "lc_label": [None, None, None],
+      "ipcc_class": [None, "Cropland", None],
+      "class": ["forest", "forest", "non-forest"],
+    }
+  )
+  gdf = gpd.GeoDataFrame(
+    df,
+    geometry=[Point(0, 0), Point(0.001, 0.001), Point(0.002, 0.002)],
+    crs="EPSG:4326",
+  )
+  gdf.to_file(path, layer="observations", driver="GPKG")
+
+  cfg = load_config(Path("field_pipeline/config/pipeline.yaml"))
+  issues = validate(path, cfg)
+
+  gt_ipcc = issues[(issues["id"] == "gt1") & (issues["field"] == "ipcc_class")]
+  train_lc = issues[(issues["id"] == "train1") & (issues["field"] == "lc_label")]
+  leak_missing_class = issues[
+    (issues["id"] == "leak1") & (issues["field"].isin(["ipcc_class", "lc_label"]))
+  ]
+
+  assert not gt_ipcc.empty
+  assert not train_lc.empty
+  assert leak_missing_class.empty
+

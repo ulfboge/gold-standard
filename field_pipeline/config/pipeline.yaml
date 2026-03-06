@@ -24,9 +24,14 @@ required_fields:
     min_gnss_accuracy_m: 0.0
     max_gnss_accuracy_m: 10.0
   lc_label:
-    required: true
+    required_for_obs_types:
+      - lc_training
+      - lc_validation
   ipcc_class:
-    required: true
+    required_for_obs_types:
+      - ground_truth
+      - lc_training
+      - lc_validation
     allowed_values:
       - Forest land
       - Cropland
