@@ -1,0 +1,240 @@
+{
+  "type": "FeatureCollection",
+  "name": "forest_nonforest_training",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "demo_forest_01",
+        "obs_type": "lc_training",
+        "date_time": "2026-03-09T09:00:00Z",
+        "collector": "demo",
+        "notes": "Synthetic demo forest point",
+        "binary_label": "forest",
+        "lc_label": "dense forest",
+        "ipcc_class": "Forest land",
+        "class": "forest",
+        "gnss_accuracy_m": 3.0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [22.0000, -2.9000]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "demo_forest_02",
+        "obs_type": "lc_training",
+        "date_time": "2026-03-09T09:05:00Z",
+        "collector": "demo",
+        "notes": "Synthetic demo forest point",
+        "binary_label": "forest",
+        "lc_label": "forest",
+        "ipcc_class": "Forest land",
+        "class": "forest",
+        "gnss_accuracy_m": 3.0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [22.0060, -2.9040]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "demo_forest_03",
+        "obs_type": "lc_training",
+        "date_time": "2026-03-09T09:10:00Z",
+        "collector": "demo",
+        "notes": "Synthetic demo forest point",
+        "binary_label": "forest",
+        "lc_label": "degraded forest",
+        "ipcc_class": "Forest land",
+        "class": "forest",
+        "gnss_accuracy_m": 4.0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [22.0100, -2.8975]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "demo_forest_04",
+        "obs_type": "lc_validation",
+        "date_time": "2026-03-09T09:15:00Z",
+        "collector": "demo",
+        "notes": "Synthetic demo forest point",
+        "binary_label": "forest",
+        "lc_label": "forest",
+        "ipcc_class": "Forest land",
+        "class": "forest",
+        "gnss_accuracy_m": 3.0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [22.0140, -2.9025]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "demo_forest_05",
+        "obs_type": "lc_validation",
+        "date_time": "2026-03-09T09:20:00Z",
+        "collector": "demo",
+        "notes": "Synthetic demo forest point",
+        "binary_label": "forest",
+        "lc_label": "forest",
+        "ipcc_class": "Forest land",
+        "class": "forest",
+        "gnss_accuracy_m": 2.5
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [22.0180, -2.8960]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "demo_forest_06",
+        "obs_type": "lc_validation",
+        "date_time": "2026-03-09T09:25:00Z",
+        "collector": "demo",
+        "notes": "Synthetic demo forest point",
+        "binary_label": "forest",
+        "lc_label": "forest",
+        "ipcc_class": "Forest land",
+        "class": "forest",
+        "gnss_accuracy_m": 3.5
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [22.0220, -2.9010]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "demo_nonforest_01",
+        "obs_type": "lc_training",
+        "date_time": "2026-03-09T09:30:00Z",
+        "collector": "demo",
+        "notes": "Synthetic demo non-forest point",
+        "binary_label": "non_forest",
+        "lc_label": "cropland",
+        "ipcc_class": "Cropland",
+        "class": "cropland",
+        "gnss_accuracy_m": 3.0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [22.0600, -2.9300]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "demo_nonforest_02",
+        "obs_type": "lc_training",
+        "date_time": "2026-03-09T09:35:00Z",
+        "collector": "demo",
+        "notes": "Synthetic demo non-forest point",
+        "binary_label": "non_forest",
+        "lc_label": "grassland",
+        "ipcc_class": "Grassland",
+        "class": "grassland",
+        "gnss_accuracy_m": 2.5
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [22.0660, -2.9340]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "demo_nonforest_03",
+        "obs_type": "lc_training",
+        "date_time": "2026-03-09T09:40:00Z",
+        "collector": "demo",
+        "notes": "Synthetic demo non-forest point",
+        "binary_label": "non_forest",
+        "lc_label": "bare ground",
+        "ipcc_class": "Other land",
+        "class": "bare",
+        "gnss_accuracy_m": 4.0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [22.0700, -2.9280]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "demo_nonforest_04",
+        "obs_type": "lc_validation",
+        "date_time": "2026-03-09T09:45:00Z",
+        "collector": "demo",
+        "notes": "Synthetic demo non-forest point",
+        "binary_label": "non_forest",
+        "lc_label": "settlement",
+        "ipcc_class": "Settlements",
+        "class": "settlement",
+        "gnss_accuracy_m": 3.0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [22.0740, -2.9320]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "demo_nonforest_05",
+        "obs_type": "lc_validation",
+        "date_time": "2026-03-09T09:50:00Z",
+        "collector": "demo",
+        "notes": "Synthetic demo non-forest point",
+        "binary_label": "non_forest",
+        "lc_label": "cropland",
+        "ipcc_class": "Cropland",
+        "class": "cropland",
+        "gnss_accuracy_m": 3.5
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [22.0780, -2.9260]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "demo_nonforest_06",
+        "obs_type": "lc_validation",
+        "date_time": "2026-03-09T09:55:00Z",
+        "collector": "demo",
+        "notes": "Synthetic demo non-forest point",
+        "binary_label": "non_forest",
+        "lc_label": "grassland",
+        "ipcc_class": "Grassland",
+        "class": "grassland",
+        "gnss_accuracy_m": 3.0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [22.0820, -2.9330]
+      }
+    }
+  ]
+}

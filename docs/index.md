@@ -16,6 +16,10 @@ The repository brings together:
   High‑level checklist for EO/GIS specialists, aligned with GS4GG Principles & Requirements, Land‑Use & Forests Activity Requirements, and the A/R GHG Methodology:
   - [`EO_workflow_GS_AR_field_pipeline.md`](gold-standard/EO_workflow_GS_AR_field_pipeline.md)
 
+- **Forest / non-forest notebook prototype**  
+  Notebook-based prototype for running a forest/non-forest classification workflow and opening it in Google Colab:
+  - [`forest_nonforest_prototype.md`](forest_nonforest_prototype.md)
+
 - **Field data pipeline (Mergin Maps → evidence packages)**  
   How to run the field pipeline locally, split into focused pages:
   - [1. Overview](field-pipeline/01_overview.md)
